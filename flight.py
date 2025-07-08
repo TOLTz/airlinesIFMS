@@ -91,13 +91,6 @@ class Flight:
     
     def add_connection(self, conection:dict):
         self.connections.append(conection)
-    
-    def ten_passengers(self):
-        passenger = random.sample(list(self.passengers.keys()), k=10)
-        for traveler in passenger:
-            a = self.passengers[traveler]
-            print(f'{traveler}'+f'{a}')
-        
         
     def __str__(self):
-        return (f'ID:{self.id}, Crews:{self.crews}, Passengers:{self.ten_passengers()}')
+        return (f'ID:{self.id}, Crews:{self.crews}, Passengers:{self.passengers}')

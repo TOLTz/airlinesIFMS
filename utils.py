@@ -34,3 +34,24 @@ def generate_birthday():
 def generate_cpf():
     fake = Faker('pt_BR')
     return fake.cpf()
+
+def generate_flight_info(scope):
+    nacional = ['Guarulhos', 'Congonhas', 'Brasília', 'Galeão', 'Salvador', 'Porto Alegre', 'Recife']
+    internacional = ['Buenos Aires', 'Santiago', 'Lima', 'Montevidéu', 'Cidade do Panamá']
+    global_ = ['Nova York', 'Paris', 'Londres', 'Tóquio', 'Lisboa', 'Dubai', 'Toronto']
+
+    all_dests = {
+        'nacional': (nacional, nacional, (300, 800)),
+        'internacional': (nacional, internacional, (900, 2500)),
+        'global': (nacional + internacional, global_, (3000, 9000))
+    }
+
+    origem_list, destino_list, price_range = all_dests[scope.lower()]
+
+    origin = random.choice(origem_list)
+    destination = random.choice([d for d in destino_list if d != origin])
+
+    price = round(random.uniform(*price_range), 2)
+    flight_code = ''.join(random.choices('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', k=5))
+
+    return origin, destination, price, flight_code

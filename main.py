@@ -15,56 +15,91 @@ if __name__ == '__main__':
     for name in names:
         airplane_obj = Plane(name.value, Scope.GLOBAL.value)
         airplane_dict = airplane_obj.to_dict()
-        airplanes.append((airplane_obj, airplane_dict))  # Guarda objeto e dicionário
+        airplanes.append((airplane_obj, airplane_dict))
 
     for airplane_obj, airplane in airplanes:
-        input('\nPressione Enter para iniciar o próximo voo...')
+        print('\n--- NOVO VOO ---')
+        print(f'Modelo da aeronave: {airplane_obj.model}')
 
-        # Criar piloto
-        pilot = Pilot(
-            generate_name(), generate_birthday(), generate_cpf(),
-            CrewType.PILOT, generate_code()
-        )
-
-        # Criar copiloto
-        copilot = Pilot(
-            generate_name(), generate_birthday(), generate_cpf(),
-            CrewType.COPILOT, generate_code()
-        )
-
-        # Criar comissários
+        # Criar tripulação
+        pilot = Pilot(generate_name(), generate_birthday(), generate_cpf(),
+                      CrewType.PILOT, generate_code())
+        copilot = Pilot(generate_name(), generate_birthday(), generate_cpf(),
+                        CrewType.COPILOT, generate_code())
         stewards = [
-            Steward(
-                generate_name(), generate_birthday(), generate_cpf(),
-                CrewType.STEWARD, generate_code(prefix='CMS')
-            )
+            Steward(generate_name(), generate_birthday(), generate_cpf(),
+                    CrewType.STEWARD, generate_code(prefix='CMS'))
             for _ in range(5)
         ]
-
         crewmates = {
             'Pilot': pilot.to_dict(),
             'Copilot': copilot.to_dict(),
             'Stewards': [s.to_dict() for s in stewards]
         }
 
-        # Criar passageiros
-        passengers = {}
-        for seat in range(1, 251):
-            p = Passenger(
-                generate_name(), generate_birthday(), generate_cpf(),
-                generate_passport_number(), generate_loyalty_number(),
-                random_bool()
-            )
-            passengers[seat] = p.to_dict()
-
         # Criar voo
-        flight = Flight(airplane, 'Guarulhos', 'Paris', 5000)
-        flight.add_crewmate(crewmate=crewmates)
-        flight.add_passenger(passengers)
+        origin, destination, price, flight_code = generate_flight_info(airplane_obj.alcance)
+        flight = Flight(airplane, origin, destination, price)
 
-        # ==== PRINTAR INFORMAÇÕES ====
-        print(f'\n--- ✈️ VOO DE {flight.origin.upper()} PARA {flight.destination.upper()} ---')
-        print(f'Nome do Avião: {airplane_obj.model}\n')
+        flight.add_crewmate(crewmate=crewmates)
+
+        # ==== MENU DE ESCOLHA DO USUÁRIO ====
+        while True:
+            print('\nComo deseja cadastrar os passageiros?')
+            print('[1] Manualmente')
+            print('[2] Preencher automaticamente')
+            option = input('Escolha: ').strip()
+            if option == '1':
+                assentos_disponiveis = list(range(1, airplane_obj.max_seat + 1))
+                while True:
+                    print('\n--- Assentos disponíveis ---')
+                    print(assentos_disponiveis)
+                    try:
+                        seat = int(input('Digite o número do assento desejado (ou 0 para sair): '))
+                        if seat == 0:
+                            break
+                        if seat not in assentos_disponiveis:
+                            print('Assento inválido ou já ocupado.')
+                            continue
+
+                        name = input('Nome do passageiro: ')
+                        birthday = input('Data de nascimento (dd/mm/aaaa): ')
+                        cpf = input('CPF: ')
+                        passport = input('Número do passaporte: ')
+                        loyalty = input('Número do programa de fidelidade: ')
+                        special = input('Possui necessidades especiais? (s/n): ').lower() == 's'
+
+                        passenger = Passenger(name, birthday, cpf, passport, loyalty, special)
+                        flight.add_passenger({seat: passenger.to_dict()})
+                        assentos_disponiveis.remove(seat)
+                        print(f'Passageiro {name} cadastrado no assento {seat} com sucesso.')
+
+                    except Exception as e:
+                        print(f'Erro ao cadastrar passageiro: {e}')
+
+            elif option == '2':
+                passengers = {}
+                for seat in range(1, airplane_obj.max_seat + 1):
+                    p = Passenger(
+                        generate_name(), generate_birthday(), generate_cpf(),
+                        generate_passport_number(), generate_loyalty_number(),
+                        random_bool()
+                    )
+                    passengers[seat] = p.to_dict()
+                flight.add_passenger(passengers)
+                break
+            else:
+                print('Opção inválida. Tente novamente.')
+                continue
+            break  # Sai do menu após cadastro manual também
+
+        # ==== INFORMAÇÕES DO VOO ====
+        print('\n========================')
+        print(f'VOO {origin[:3].upper()}-{destination[:3].upper()}-{flight_code}')
+        print(f'Origem: {origin} → Destino: {destination}')
+        print(f'Avião: {airplane_obj.model}')
+        print(f'Alcance: {airplane_obj.alcance} | Preço da passagem: R$ {flight.price:.2f}\n')
+        print(f'Preço da passagem: R$ {flight.price:.2f}\n')
 
         print('--- Tripulação ---')
         print(f'Piloto: {pilot.name}')
@@ -72,21 +107,24 @@ if __name__ == '__main__':
         print('Comissários:')
         for s in stewards:
             print(f' - {s.name}')
-        
-        print('\n--- 10 Passageiros Aleatórios ---')
-        sample_seats = random.sample(list(flight.passengers.keys()), 10)
-        for seat in sample_seats:
-            p = flight.passengers[seat]
-            print(f'Assento {seat}: {p["name"]}')
 
-        # ==== INTERAÇÃO COM O USUÁRIO ====
+        print('\n--- 10 Passageiros Aleatórios ---')
+        if flight.passengers:
+            sample_seats = random.sample(list(flight.passengers.keys()), min(10, len(flight.passengers)))
+            for seat in sample_seats:
+                p = flight.passengers[seat]
+                print(f'Assento {seat}: {p["name"]}')
+        else:
+            print('Nenhum passageiro registrado neste voo.')
+
+        # ==== OPÇÃO FINAL ====
         while True:
             choice = input('\nDigite [1] para ver todos os passageiros ou [2] para o próximo voo: ')
             if choice == '1':
-                print('\n--- Todos os passageiros ---')
-                for seat, p in flight.passengers.items():
+                print('\n--- Lista completa de passageiros ---')
+                for seat, p in sorted(flight.passengers.items()):
                     print(f'Assento {seat}: {p["name"]}')
-                input("\nPressione Enter para seguir...")
+                input("\nPressione Enter para continuar...")
                 break
             elif choice == '2':
                 break
