@@ -10,8 +10,8 @@ class Flight:
         self._id = uuid4()
         self._crews = {}
         self._plane = plane
-        self._departure_date = ...
-        self._arrival_date = ...
+        self._departure_date = datetime.min
+        self._arrival_date = datetime.min
         self._passengers = {}
         self._origin = origin
         self._connections = []

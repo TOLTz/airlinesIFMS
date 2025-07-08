@@ -6,6 +6,8 @@ from steward import Steward
 from crew import CrewType
 import random
 from utils import *
+from datetime import timedelta, datetime
+
 
 if __name__ == '__main__':
     list_models = list(Models)
@@ -13,7 +15,9 @@ if __name__ == '__main__':
     airplanes = []
 
     for name in names:
-        airplane_obj = Plane(name.value, Scope.GLOBAL.value)
+        scope = random.choice(list(Scope))
+        airplane_obj = Plane(name.value, scope.value)
+
         airplane_dict = airplane_obj.to_dict()
         airplanes.append((airplane_obj, airplane_dict))
 
@@ -38,8 +42,23 @@ if __name__ == '__main__':
         }
 
         # Criar voo
-        origin, destination, price, flight_code = generate_flight_info(airplane_obj.alcance)
+
+        origin, destination, price, flight_code = generate_flight_info(scope.value)
         flight = Flight(airplane, origin, destination, price)
+        num_connections = random.randint(0, 2)
+        if num_connections > 0:
+            all_possible_stops = [
+                'Fortaleza', 'Natal', 'Madrid', 'Miami', 'Londres', 'Lima',
+                'Cidade do México', 'Amsterdam', 'Dakar', 'Roma', 'Frankfurt'
+            ]
+            used_stops = set([origin, destination])
+            for _ in range(num_connections):
+                stop = random.choice([s for s in all_possible_stops if s not in used_stops])
+                conn = {
+                    'stop': stop
+                }
+                flight.add_connection(conn)
+                used_stops.add(stop)
 
         flight.add_crewmate(crewmate=crewmates)
 
@@ -119,7 +138,7 @@ if __name__ == '__main__':
 
         # ==== OPÇÃO FINAL ====
         while True:
-            choice = input('\nDigite [1] para ver todos os passageiros ou [2] para o próximo voo: ')
+            choice = input('\nDigite [1] para ver todos os passageiros ou [2] liberar o voo: ')
             if choice == '1':
                 print('\n--- Lista completa de passageiros ---')
                 for seat, p in sorted(flight.passengers.items()):
@@ -127,6 +146,21 @@ if __name__ == '__main__':
                 input("\nPressione Enter para continuar...")
                 break
             elif choice == '2':
+                flight.liberate_plane()
+                alcance = airplane_obj.alcance
+                if alcance == Scope.NACIONAL.value:
+                    duration = timedelta(hours=2)
+                elif alcance == Scope.INTERNACIONAL.value:
+                    duration = timedelta(hours=6)
+                elif alcance == Scope.GLOBAL.value:
+                    duration = timedelta(hours=12)
+                else:
+                    duration = timedelta(hours=1)  # fallback
+                
+                flight.arrival_date = flight.departure_date + duration
+
+                print(f"\n✈️ Partida registrada em: {flight.departure_date.strftime('%d/%m/%Y %H:%M')}")
+                print(f"🛬 Chegada estimada em: {flight.arrival_date.strftime('%d/%m/%Y %H:%M')}")
                 break
             else:
                 print('Opção inválida. Tente novamente.')
