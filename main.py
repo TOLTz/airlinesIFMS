@@ -6,7 +6,7 @@ from steward import Steward
 from crew import CrewType
 import random
 from utils import *
-from datetime import timedelta, datetime
+from datetime import timedelta
 
 
 if __name__ == '__main__':
@@ -30,6 +30,7 @@ if __name__ == '__main__':
                       CrewType.PILOT, generate_code())
         copilot = Pilot(generate_name(), generate_birthday(), generate_cpf(),
                         CrewType.COPILOT, generate_code())
+        # são criados 5, pois é indicado 1 para cada 50 passageiros
         stewards = [
             Steward(generate_name(), generate_birthday(), generate_cpf(),
                     CrewType.STEWARD, generate_code(prefix='CMS'))
@@ -69,15 +70,15 @@ if __name__ == '__main__':
             print('[2] Preencher automaticamente')
             option = input('Escolha: ').strip()
             if option == '1':
-                assentos_disponiveis = list(range(1, airplane_obj.max_seat + 1))
+                available_seats = list(range(1, airplane_obj.max_seat + 1))
                 while True:
                     print('\n--- Assentos disponíveis ---')
-                    print(assentos_disponiveis)
+                    print(available_seats)
                     try:
                         seat = int(input('Digite o número do assento desejado (ou 0 para sair): '))
                         if seat == 0:
                             break
-                        if seat not in assentos_disponiveis:
+                        if seat not in available_seats:
                             print('Assento inválido ou já ocupado.')
                             continue
 
@@ -90,7 +91,7 @@ if __name__ == '__main__':
 
                         passenger = Passenger(name, birthday, cpf, passport, loyalty, special)
                         flight.add_passenger({seat: passenger.to_dict()})
-                        assentos_disponiveis.remove(seat)
+                        available_seats.remove(seat)
                         print(f'Passageiro {name} cadastrado no assento {seat} com sucesso.')
 
                     except Exception as e:
@@ -110,14 +111,14 @@ if __name__ == '__main__':
             else:
                 print('Opção inválida. Tente novamente.')
                 continue
-            break  # Sai do menu após cadastro manual também
+            break
 
         # ==== INFORMAÇÕES DO VOO ====
         print('\n========================')
         print(f'VOO {origin[:3].upper()}-{destination[:3].upper()}-{flight_code}')
         print(f'Origem: {origin} → Destino: {destination}')
         print(f'Avião: {airplane_obj.model}')
-        print(f'Alcance: {airplane_obj.alcance} | Preço da passagem: R$ {flight.price:.2f}\n')
+        print(f'reach: {airplane_obj.reach} | Preço da passagem: R$ {flight.price:.2f}\n')
         print(f'Preço da passagem: R$ {flight.price:.2f}\n')
 
         print('--- Tripulação ---')
@@ -135,8 +136,6 @@ if __name__ == '__main__':
                 print(f'Assento {seat}: {p["name"]}')
         else:
             print('Nenhum passageiro registrado neste voo.')
-
-        # ==== OPÇÃO FINAL ====
         while True:
             choice = input('\nDigite [1] para ver todos os passageiros ou [2] liberar o voo: ')
             if choice == '1':
@@ -147,15 +146,15 @@ if __name__ == '__main__':
                 break
             elif choice == '2':
                 flight.liberate_plane()
-                alcance = airplane_obj.alcance
-                if alcance == Scope.NACIONAL.value:
+                reach = airplane_obj.reach
+                if reach == Scope.NACIONAL.value:
                     duration = timedelta(hours=2)
-                elif alcance == Scope.INTERNACIONAL.value:
+                elif reach == Scope.INTERNACIONAL.value:
                     duration = timedelta(hours=6)
-                elif alcance == Scope.GLOBAL.value:
+                elif reach == Scope.GLOBAL.value:
                     duration = timedelta(hours=12)
                 else:
-                    duration = timedelta(hours=1)  # fallback
+                    duration = timedelta(hours=1) 
                 
                 flight.arrival_date = flight.departure_date + duration
 

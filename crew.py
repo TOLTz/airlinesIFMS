@@ -8,8 +8,6 @@ class CrewType(Enum):
     COPILOT = 'Copilot'
     STEWARD = 'Steward'
 
-
-
 class Crew(ABC):
     def __init__(self, name, birthday, cpf, role):
         self._id = uuid4()

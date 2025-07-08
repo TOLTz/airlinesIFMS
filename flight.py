@@ -3,8 +3,6 @@ from plane import Plane
 import random
 from datetime import datetime
 
-
-
 class Flight:
     def __init__(self, plane:Plane, origin:str, destination:str, price:float):
         self._id = uuid4()

@@ -52,6 +52,6 @@ def generate_flight_info(scope):
     destination = random.choice([d for d in destino_list if d != origin])
 
     price = round(random.uniform(*price_range), 2)
-    flight_code = ''.join(random.choices('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', k=5))
+    flight_code = ''.join(random.choices(f'{ascii_uppercase + digits}', k=5))
 
     return origin, destination, price, flight_code

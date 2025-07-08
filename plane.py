@@ -22,10 +22,10 @@ class Scope(Enum):
     GLOBAL = 'global'
 
 class Plane:
-    def __init__(self, model, alcance, max_seat = 250):
+    def __init__(self, model, reach, max_seat = 250):
         self._id = uuid4()
         self._model = model
-        self._alcance = alcance
+        self._reach = reach
         self._max_seat = max_seat
 
     @property
@@ -53,24 +53,24 @@ class Plane:
         self._model = value
 
     @property
-    def alcance(self):
-        return self._alcance
+    def reach(self):
+        return self._reach
 
-    @alcance.setter
-    def alcance(self, value):
+    @reach.setter
+    def reach(self, value):
         if isinstance(value, Enum):
-            self._alcance = value
+            self._reach = value
 
 
     def to_dict(self):
         return {
             'ID':     self.id,
             'Model':  self.model,
-            'Alcance':self.alcance,
+            'Alcance':self.reach,
             'Lugares':self.max_seat
         }
 
     def __str__(self) -> str:
-        return f'ID: {self.id}, modelo: {self.model}, Alcance: {self.alcance}' 
+        return f'ID: {self.id}, modelo: {self.model}, Alcance: {self.reach}' 
 
     
