@@ -76,18 +76,41 @@ class Flight:
         self._destination = value
 
     def liberate_plane(self):
+        """
+        Função que libera o avião e salva a data de liberação
+        """
         self.departure_date = datetime.now()
 
     def confirm_arrival(self):
+        """
+        Função que confirma a chegada do avião e salva sua data
+        """
         self.arrival_date = datetime.now()
 
     def add_crewmate(self, crewmate):
+        """
+        Função para adicionar novos tripulantes ao voo
+
+        Args:
+            crewmate (dict): Dicionarios com as informações dos tripulantes.
+        """
         self.crews.update(crewmate)
                 
     def add_passenger(self, passenger):
+        """
+        Função para adicionar novo passageiro ao voo
+
+        Args:
+            passenger (dict): Dicionario com as info do tripulante
+        """
         self.passengers.update(passenger)
     
     def add_connection(self, conection:dict):
+        """_summary_
+
+        Args:
+            conection (dict): Dicionario com as conexões feitas até a conclusão do voo
+        """
         self.connections.append(conection)
         
     def __str__(self):

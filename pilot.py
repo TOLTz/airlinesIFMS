@@ -23,6 +23,11 @@ class Pilot(Crew):
         self._cht = value
 
     def to_dict(self):
+        """
+            Função que transforma o objeto em dicionario
+        Returns:
+            dict: dicionario com as informações
+        """
         return {'Name': self.name, 
                 'Birthday': self.birthday,
                 'CPF':self.cpf,

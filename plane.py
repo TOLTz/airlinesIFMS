@@ -63,6 +63,12 @@ class Plane:
 
 
     def to_dict(self):
+        
+        """
+            Função que transforma o objeto em dicionario
+        Returns:
+            dict: dicionario com as informações
+        """
         return {
             'ID':     self.id,
             'Model':  self.model,

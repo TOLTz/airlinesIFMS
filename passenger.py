@@ -71,15 +71,20 @@ class Passenger:
 
 
     def to_dict(self):
+        """
+            Função que transforma o objeto em dicionario
+        Returns:
+            dict: dicionario com as informações
+        """
         return {
-            'id': str(self.id), # Converte UUID para string
+            'id': str(self.id),
             'name': self.name,
-            'birthday': self.birthday, # Considere formatar para string se necessário
+            'birthday': self.birthday,
             'cpf': self.cpf,
             'passport_number': self.passport_number,
             'loyalty_program_number': self.loyalty_program_number,
             'special_needs': self.special_needs,
-            'creation_date': self._cration_date.isoformat() # Formata a data para ISO 8601 string
+            'creation_date': self._cration_date.isoformat()
         }
 
 
