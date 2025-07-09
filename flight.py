@@ -94,7 +94,12 @@ class Flight:
         Args:
             crewmate (dict): Dicionarios com as informações dos tripulantes.
         """
-        self.crews.update(crewmate)
+        try:
+            if not isinstance(crewmate, dict):
+                raise TypeError("Crewmate precisa ser um dicionário.")
+            self.crews.update(crewmate)
+        except Exception as e:
+            print(f"Erro ao adicionar tripulação: {e}")
                 
     def add_passenger(self, passenger):
         """
@@ -103,7 +108,16 @@ class Flight:
         Args:
             passenger (dict): Dicionario com as info do tripulante
         """
-        self.passengers.update(passenger)
+        try:
+            for seat, p in passenger.items():
+                if seat in self._passengers:
+                    raise ValueError(f"Assento {seat} já está ocupado.")
+                if not isinstance(p, dict) or "name" not in p:
+                    raise TypeError("Dados do passageiro inválidos.")
+            self.passengers.update(passenger)
+        except Exception as e:
+            print(f"Erro ao adicionar passageiro: {e}")
+
     
     def add_connection(self, conection:dict):
         """_summary_
@@ -111,7 +125,12 @@ class Flight:
         Args:
             conection (dict): Dicionario com as conexões feitas até a conclusão do voo
         """
-        self.connections.append(conection)
+        try:
+            if not isinstance(conection, dict) or "stop" not in conection:
+                raise ValueError("Conexão inválida. Precisa conter a chave 'stop'.")
+            self.connections.append(conection)
+        except Exception as e:
+            print(f"Erro ao adicionar conexão: {e}")
         
     def __str__(self):
         return (f'ID:{self.id}, Crews:{self.crews}, Passengers:{self.passengers}')

@@ -94,22 +94,28 @@ def generate_flight_info(scope):
     Returns:
         str: retorna as informações do voo 
     """
-    nacional = ['Guarulhos', 'Congonhas', 'Brasília', 'Galeão', 'Salvador', 'Porto Alegre', 'Recife']
-    internacional = ['Buenos Aires', 'Santiago', 'Lima', 'Montevidéu', 'Cidade do Panamá']
-    global_ = ['Nova York', 'Paris', 'Londres', 'Tóquio', 'Lisboa', 'Dubai', 'Toronto']
+    try:
+        nacional = ['Guarulhos', 'Congonhas', 'Brasília', 'Galeão', 'Salvador', 'Porto Alegre', 'Recife']
+        internacional = ['Buenos Aires', 'Santiago', 'Lima', 'Montevidéu', 'Cidade do Panamá']
+        global_ = ['Nova York', 'Paris', 'Londres', 'Tóquio', 'Lisboa', 'Dubai', 'Toronto']
 
-    all_dests = {
-        'nacional': (nacional, nacional, (300, 800)),
-        'internacional': (nacional, internacional, (900, 2500)),
-        'global': (nacional + internacional, global_, (3000, 9000))
-    }
+        all_dests = {
+            'nacional': (nacional, nacional, (300, 800)),
+            'internacional': (nacional, internacional, (900, 2500)),
+            'global': (nacional + internacional, global_, (3000, 9000))
+        }
 
-    origem_list, destino_list, price_range = all_dests[scope.lower()]
+        if scope.lower() not in all_dests:
+            raise ValueError(f"Escopo '{scope}' inválido. Use: nacional, internacional ou global.")
 
-    origin = random.choice(origem_list)
-    destination = random.choice([d for d in destino_list if d != origin])
+        origem_list, destino_list, price_range = all_dests[scope.lower()]
 
-    price = round(random.uniform(*price_range), 2)
-    flight_code = ''.join(random.choices(f'{ascii_uppercase + digits}', k=5))
+        origin = random.choice(origem_list)
+        destination = random.choice([d for d in destino_list if d != origin])
+        price = round(random.uniform(*price_range), 2)
+        flight_code = ''.join(random.choices(f'{ascii_uppercase + digits}', k=5))
 
-    return origin, destination, price, flight_code
+        return origin, destination, price, flight_code
+    except Exception as e:
+        print(f"Erro ao gerar dados do voo: {e}")
+        raise

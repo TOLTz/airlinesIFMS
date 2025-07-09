@@ -16,16 +16,16 @@ class Crew(ABC):
         self._cpf = cpf
         self._role = role 
         self._registerDate = datetime.now()
-        
-        
+
     @property
     def role(self):
         return self._role
 
     @role.setter
     def role(self, value):
-        if isinstance(value, Enum):
-            self._role = value
+        if not isinstance(value, Enum):
+            raise TypeError("Role deve ser uma instância de Enum.")
+        self._role = value
 
     @property
     def id(self):
@@ -37,6 +37,8 @@ class Crew(ABC):
 
     @name.setter
     def name(self, value):
+        if not isinstance(value, str):
+            raise TypeError("Nome deve ser uma string.")
         self._name = value
 
     @property
@@ -53,12 +55,14 @@ class Crew(ABC):
 
     @cpf.setter
     def cpf(self, value):
+        if not isinstance(value, str) or len(value) != 14:
+            raise ValueError("CPF inválido. Deve estar no formato '000.000.000-00'")
         self._cpf = value
-    
+
     @abstractmethod
     def to_dict(self):
         pass
-    
+
     @abstractmethod
     def __str__(self):
         pass
